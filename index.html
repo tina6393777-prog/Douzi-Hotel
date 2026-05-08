@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>豆子一家輕旅客服助手</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--brand:#16a34a;--brand-dark:#15803d;--brand-light:#86efac;--brand-bg:#f0fdf4;--success:#2D9F60;--text:#2C2C2C;--text-light:#6B6B6B;--border:#d1e7d6;--bg:#f7fdf9;--white:#FFF;--shadow:0 2px 8px rgba(22,163,74,.08);--shadow-hover:0 6px 20px rgba(22,163,74,.15);--radius:12px;--fs:16px}
+html{font-size:var(--fs)}
+body{font-family:-apple-system,BlinkMacSystemFont,"Microsoft JhengHei","PingFang TC","Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;padding-bottom:40px}
+.header{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;padding:16px;box-shadow:0 4px 12px rgba(22,163,74,.2);position:sticky;top:0;z-index:100}
+.header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.logo-box{background:#fff;border-radius:12px;padding:10px 16px;display:flex;align-items:center;box-shadow:0 2px 6px rgba(0,0,0,.1);flex-shrink:0;font-size:1.6rem;font-weight:900;color:#16a34a;letter-spacing:2px}
+.header-center{flex:1;min-width:180px}
+.header h1{font-size:1.25rem;margin-bottom:4px;letter-spacing:1px;font-weight:700}
+.header-contact{font-size:.8rem;opacity:.95;line-height:1.7}
+.header-contact strong{color:#bbf7d0;margin-right:4px}
+.header-actions{display:flex;gap:6px;flex-shrink:0}
+.btn-icon{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);color:#fff;padding:6px 12px;border-radius:20px;font-size:.8rem;cursor:pointer;transition:.2s;white-space:nowrap;font-family:inherit}
+.btn-icon:hover{background:rgba(255,255,255,.28)}
+@media(max-width:640px){.header-inner{gap:10px}.header h1{font-size:1.05rem}.header-contact{font-size:.72rem}.btn-icon{padding:5px 10px;font-size:.75rem}}
+.marquee-wrap{background:#f0fdf4;border-bottom:1px solid #bbf7d0;overflow:hidden;padding:8px 0}
+.marquee{display:inline-block;white-space:nowrap;animation:marquee 40s linear infinite;font-size:.85rem;color:#15803d}
+@keyframes marquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.container{max-width:1200px;margin:0 auto;padding:16px}
+.update-banner{background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:none;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;font-size:.9rem;color:#15803d}
+.update-banner.show{display:flex}
+.update-banner button{background:#16a34a;color:#fff;border:none;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:.85rem;font-family:inherit}
+.search-box{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:12px 16px;display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.search-box input{flex:1;border:none;outline:none;font-size:1rem;color:var(--text);background:transparent;padding:4px 0;font-family:inherit}
+.search-icon{color:var(--brand);font-size:1.2rem}
+.search-clear{background:var(--border);border:none;border-radius:50%;width:24px;height:24px;font-size:.8rem;cursor:pointer;color:var(--text-light);display:none}
+.search-clear.show{display:block}
+.main-layout{display:flex;gap:16px;align-items:flex-start}
+.sidebar{width:220px;flex-shrink:0;position:sticky;top:120px;max-height:calc(100vh - 140px);overflow-y:auto;background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);padding:0;border:1px solid var(--border)}
+.sidebar-header{background:var(--brand);color:#fff;padding:12px 16px;font-weight:700;font-size:.95rem;border-radius:var(--radius) var(--radius) 0 0;text-align:center}
+.content-area{flex:1;min-width:0}
+@media(max-width:900px){.main-layout{flex-direction:column}.sidebar{width:100%;position:static;max-height:none;overflow:visible}.sidebar.collapsed .categories{display:none}.sidebar.collapsed .sidebar-header::after{content:' ▼';font-size:.8rem}.sidebar-header{cursor:pointer}}
+.categories{display:flex;flex-direction:column;gap:0}
+.category-card{background:var(--white);border:none;border-bottom:1px solid var(--border);border-radius:0;padding:12px 14px;text-align:left;cursor:pointer;transition:.2s;position:relative;display:flex;align-items:center;gap:10px}
+.category-card:last-child{border-bottom:none}
+.category-card:hover{background:var(--brand-bg)}
+.category-card.active{background:var(--brand);color:#fff}
+.category-card .icon{font-size:1.3rem;flex-shrink:0}
+.category-card .name{font-size:.85rem;font-weight:600;flex:1}
+.category-card .count{background:var(--brand);color:#fff;font-size:.7rem;padding:2px 8px;border-radius:12px;font-weight:600;flex-shrink:0}
+.category-card.active .count{background:rgba(255,255,255,.3);color:#fff}
+.section-title{font-size:1.1rem;font-weight:700;color:var(--brand);margin:16px 0 12px;padding-left:12px;border-left:4px solid var(--brand);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}
+.section-title .count-badge{font-size:.8rem;color:var(--text-light);font-weight:500}
+.qa-list{display:flex;flex-direction:column;gap:12px}
+.qa-card{background:var(--white);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;border:1px solid var(--border);transition:.2s;position:relative}
+.qa-card:hover{box-shadow:var(--shadow-hover)}
+.qa-header{padding:14px 16px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;user-select:none}
+.qa-header:hover{background:var(--brand-bg)}
+.qa-title{flex:1;font-weight:600;color:var(--text);font-size:1rem;line-height:1.5}
+.qa-arrow{color:var(--brand);font-size:1rem;transition:transform .2s;flex-shrink:0;margin-top:2px}
+.qa-card.open .qa-arrow{transform:rotate(180deg)}
+.qa-content{max-height:0;overflow:hidden;transition:max-height .3s ease-out;background:var(--brand-bg)}
+.qa-card.open .qa-content{max-height:10000px}
+.qa-body{padding:16px;font-size:.95rem;white-space:pre-wrap;word-break:break-word;line-height:1.8;color:var(--text);border-top:1px solid var(--border)}
+.qa-body a{color:var(--brand);text-decoration:underline;word-break:break-all}
+.qa-tags{padding:0 16px 12px;display:flex;flex-wrap:wrap;gap:6px}
+.tag{font-size:.75rem;padding:3px 10px;background:var(--border);color:var(--text-light);border-radius:12px}
+.badge{font-size:.7rem;padding:2px 8px;border-radius:10px;font-weight:600;display:inline-block;margin-left:6px;vertical-align:middle}
+.badge-urgent{background:#fee2e2;color:#dc2626;border:1px solid #dc2626}
+.badge-internal{background:#FFF3CD;color:#856404;border:1px solid #FFC107}
+.ct-red{color:#dc2626;font-weight:700}
+.ct-orange{color:#ea580c;font-weight:600}
+.ct-green{color:#16a34a;font-weight:600}
+.ct-blue{color:#2563eb;font-weight:600}
+.ct-purple{color:#7c3aed;font-weight:600}
+.qa-admin-btns{position:absolute;top:8px;right:8px;display:none;gap:4px;z-index:5}
+body.admin-mode .qa-admin-btns{display:flex}
+.qa-admin-btns button{background:var(--brand);color:#fff;border:none;width:28px;height:28px;border-radius:50%;font-size:.75rem;cursor:pointer;box-shadow:0 2px 4px rgba(0,0,0,.12);opacity:.7;transition:.2s;padding:0;line-height:28px;text-align:center}
+.qa-admin-btns button:hover{opacity:1;transform:scale(1.1)}
+.qa-edit-panel{background:#fff;border-top:2px solid var(--brand);padding:16px;display:none}
+.qa-edit-panel.show{display:block}
+.edit-toolbar{display:flex;flex-wrap:wrap;gap:4px;padding:8px;background:#F5F5F5;border:1px solid var(--border);border-bottom:none;border-radius:8px 8px 0 0;margin-bottom:-1px}
+.tool-btn{padding:6px 10px;border:1px solid var(--border);background:#fff;border-radius:4px;cursor:pointer;font-size:.85rem;font-family:inherit;transition:.15s}
+.tool-btn:hover{background:var(--brand);color:#fff;border-color:var(--brand)}
+.tool-btn.c-red{color:#dc2626;font-weight:700}
+.tool-btn.c-orange{color:#ea580c;font-weight:600}
+.tool-btn.c-green{color:#16a34a;font-weight:600}
+.tool-btn.c-blue{color:#2563eb;font-weight:600}
+.tool-btn.c-purple{color:#7c3aed;font-weight:600}
+.tool-sep{width:1px;background:#CCC;margin:0 4px}
+.edit-textarea{width:100%;min-height:200px;padding:10px;border:1px solid var(--border);border-radius:0 0 8px 8px;font-size:.95rem;font-family:"Microsoft JhengHei",monospace;line-height:1.6;resize:vertical;outline:none}
+.edit-textarea:focus{border-color:var(--brand)}
+.edit-field{margin-bottom:12px}
+.edit-field label{display:block;font-weight:600;margin-bottom:4px;font-size:.85rem;color:var(--text)}
+.edit-field input,.edit-field select{width:100%;padding:8px;border:1px solid var(--border);border-radius:6px;font-size:.9rem;outline:none;font-family:inherit}
+.edit-field input:focus,.edit-field select:focus{border-color:var(--brand)}
+.edit-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.edit-actions button{padding:8px 16px;border:none;border-radius:6px;font-size:.9rem;cursor:pointer;font-family:inherit;font-weight:600}
+.edit-save{background:var(--brand);color:#fff}
+.edit-save:hover{background:var(--brand-dark)}
+.edit-cancel{background:var(--border);color:var(--text)}
+.edit-delete{background:#FFEBEE;color:#C62828}
+.edit-check{display:flex;gap:14px;margin-bottom:8px;flex-wrap:wrap}
+.edit-check label{display:flex;align-items:center;gap:4px;font-size:.85rem;cursor:pointer}
+.edit-check input{width:auto}
+.empty-state{text-align:center;padding:40px 20px;color:var(--text-light)}
+.empty-state .big{font-size:3rem;margin-bottom:10px}
+.modal{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;justify-content:center;align-items:flex-start;padding:20px;overflow-y:auto}
+.modal.show{display:flex}
+.modal-content{background:#fff;border-radius:var(--radius);max-width:900px;width:100%;max-height:calc(100vh - 40px);display:flex;flex-direction:column;box-shadow:0 10px 40px rgba(0,0,0,.3)}
+.modal-header{padding:18px 20px;display:flex;justify-content:space-between;align-items:center;background:var(--brand);color:#fff;border-radius:var(--radius) var(--radius) 0 0}
+.modal-header h2{font-size:1.1rem}
+.modal-close{background:rgba(255,255,255,.2);border:none;color:#fff;width:32px;height:32px;border-radius:50%;font-size:1.2rem;cursor:pointer}
+.modal-body{padding:20px;overflow-y:auto;flex:1}
+.login-form{text-align:center;padding:20px}
+.login-form input{width:100%;padding:12px;font-size:1rem;border:1px solid var(--border);border-radius:8px;margin:10px 0;outline:none;font-family:inherit}
+.login-form input:focus{border-color:var(--brand)}
+.btn-primary{background:var(--brand);color:#fff;border:none;padding:10px 24px;border-radius:8px;font-size:.95rem;cursor:pointer;font-weight:600;transition:.2s;font-family:inherit}
+.btn-primary:hover{background:var(--brand-dark)}
+.btn-secondary{background:var(--border);color:var(--text);border:none;padding:10px 20px;border-radius:8px;font-size:.95rem;cursor:pointer;margin-right:8px;font-family:inherit}
+.admin-tabs{display:flex;gap:4px;margin-bottom:16px;border-bottom:2px solid var(--border);overflow-x:auto}
+.admin-tab{padding:10px 14px;border:none;background:none;cursor:pointer;color:var(--text-light);font-weight:600;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;font-family:inherit;font-size:.9rem}
+.admin-tab.active{color:var(--brand);border-bottom-color:var(--brand)}
+.admin-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.admin-toolbar input,.admin-toolbar select{padding:8px 12px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:.9rem}
+.admin-list{max-height:50vh;overflow-y:auto;border:1px solid var(--border);border-radius:8px}
+.admin-item{padding:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.admin-item:last-child{border-bottom:none}
+.admin-item-info{flex:1;min-width:0}
+.admin-item-title{font-weight:600;color:var(--text);margin-bottom:2px;overflow:hidden;text-overflow:ellipsis}
+.admin-item-meta{font-size:.8rem;color:var(--text-light)}
+.admin-btn{padding:6px 12px;border:none;border-radius:6px;font-size:.85rem;cursor:pointer;font-weight:500;font-family:inherit}
+.admin-btn-edit{background:#dcfce7;color:#16a34a}
+.admin-btn-del{background:#FFEBEE;color:#C62828}
+.admin-btn-edit:hover{background:#bbf7d0}
+.admin-btn-del:hover{background:#FFCDD2}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-weight:600;margin-bottom:6px;color:var(--text);font-size:.9rem}
+.form-group input,.form-group select,.form-group textarea{width:100%;padding:10px;border:1px solid var(--border);border-radius:8px;font-size:.95rem;outline:none;font-family:inherit}
+.form-group textarea{min-height:150px;resize:vertical;line-height:1.6}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{border-color:var(--brand)}
+.icon-picker{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;max-height:260px;overflow-y:auto;padding:10px;border:1px solid var(--border);border-radius:8px;background:#FAFAFA}
+.icon-option{font-size:1.5rem;padding:8px;text-align:center;cursor:pointer;border-radius:6px;background:#fff;border:2px solid transparent;transition:.15s}
+.icon-option:hover{border-color:var(--brand-light)}
+.icon-option.selected{border-color:var(--brand);background:var(--brand-bg)}
+.export-section{background:var(--brand-bg);padding:16px;border-radius:8px;margin-top:16px;border:1px solid var(--brand-light)}
+.export-section h3{color:var(--brand);margin-bottom:8px;font-size:1rem}
+.export-section p{font-size:.85rem;color:var(--text-light);margin-bottom:10px}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--text);color:#fff;padding:12px 24px;border-radius:25px;font-size:.9rem;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:2000;opacity:0;transition:.3s;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+body.fs-large{--fs:18px}body.fs-xlarge{--fs:20px}
+.scroll-top{position:fixed;bottom:20px;right:20px;width:44px;height:44px;background:var(--brand);color:#fff;border:none;border-radius:50%;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 12px rgba(22,163,74,.3);opacity:0;pointer-events:none;transition:.3s;z-index:50;font-family:inherit}
+.scroll-top.show{opacity:1;pointer-events:auto}
+.cat-manage-btn{display:none;margin-left:8px;background:var(--brand);color:#fff;border:none;padding:4px 10px;border-radius:14px;font-size:.75rem;cursor:pointer;vertical-align:middle;font-family:inherit}
+body.admin-mode .cat-manage-btn{display:inline-block}
+</style>
+</head>
+<body>
+<div class="header">
+<div class="header-inner">
+<div class="logo-box">🫘 豆子一家</div>
+<div class="header-center">
+<h1 id="headerTitle">豆子一家輕旅 客服助手</h1>
+<div class="header-contact" id="headerContact"></div>
+</div>
+<div class="header-actions">
+<button class="btn-icon" onclick="checkUpdate()" title="檢查更新">🔄</button>
+<button class="btn-icon" onclick="toggleFontSize()" title="字級">🔤</button>
+<button class="btn-icon" onclick="openAdmin()" title="管理">⚙️</button>
+</div>
+</div>
+</div>
+<div class="marquee-wrap"><div class="marquee" id="marqueeText"></div></div>
+<div class="container">
+<div class="update-banner" id="updateBanner"><span>🆕 偵測到新版本！</span><button onclick="applyUpdate()">立即更新</button></div>
+<div class="main-layout">
+<aside class="sidebar" id="sidebarPanel">
+<div class="sidebar-header">📂 分類選單</div>
+<div class="categories" id="categoryContainer"></div>
+</aside>
+<main class="content-area">
+<div class="search-box"><span class="search-icon">🔍</span><input type="text" id="searchInput" placeholder="搜尋關鍵字（標題、內容、標籤）..."><button class="search-clear" id="searchClear" onclick="clearSearch()">✕</button></div>
+<div id="resultContainer"></div>
+</main>
+</div>
+</div>
+<button class="scroll-top" id="scrollTop" onclick="scrollToTop()">↑</button>
+<div class="modal" id="adminModal">
+<div class="modal-content">
+<div class="modal-header"><h2 id="adminTitle">⚙️ 管理後台</h2><button class="modal-close" onclick="closeAdmin()">✕</button></div>
+<div class="modal-body" id="adminBody"></div>
+</div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+let DATA=null,currentCategory='all',isAdmin=false;
+const ADMIN_PASSWORD='1234';
+const ICONS=['🏢','🛏️','💳','🎁','🏪','🌐','💰','📍','📢','🛍️','🎯','⭐','🔥','💎','📝','📋','📊','📌','📞','📱','💬','🚨','⚠️','🔒','🔑','✅','❌','❓','❗','🚀','✨','💡','🧳','🚗','🚕','🏠','💻','🎓','📚','🔧','⚙️','🚚'];
+window.addEventListener('DOMContentLoaded',init);
+async function init(){try{const local=localStorage.getItem('beans_qa_data');if(local){try{DATA=JSON.parse(local)}catch(e){DATA=await loadJson()}}else DATA=await loadJson();renderAll();silentCheck()}catch(e){document.getElementById('resultContainer').innerHTML='<div class="empty-state"><div class="big">⚠️</div><p>無法載入資料，請確認 data.json</p><p style="font-size:.85rem;margin-top:8px">'+e.message+'</p></div>'}document.getElementById('searchInput').addEventListener('input',onSearch);window.addEventListener('scroll',()=>{document.getElementById('scrollTop').classList.toggle('show',scrollY>300)});document.querySelector('.sidebar-header')?.addEventListener('click',()=>{if(window.innerWidth<=900)document.getElementById('sidebarPanel')?.classList.toggle('collapsed')})}
+async function loadJson(){const r=await fetch('data.json?t='+Date.now());if(!r.ok)throw new Error('載入失敗');return r.json()}
+async function silentCheck(){try{const s=await loadJson();const localBuild=DATA.meta.buildNum||0;const serverBuild=s.meta.buildNum||0;if(serverBuild>localBuild&&localStorage.getItem('beans_qa_data')){window._pu=s;document.getElementById('updateBanner').classList.add('show')}}catch(e){}}
+async function checkUpdate(){showToast('檢查中...');try{const s=await loadJson();if(!localStorage.getItem('beans_qa_data')){DATA=s;renderAll();showToast('已是最新');return}const localBuild=DATA.meta.buildNum||0;const serverBuild=s.meta.buildNum||0;if(serverBuild>localBuild){window._pu=s;document.getElementById('updateBanner').classList.add('show');showToast('發現新版本（v'+serverBuild+'）！')}else showToast('已是最新（v'+localBuild+'）')}catch(e){showToast('檢查失敗')}}
+function applyUpdate(){if(!window._pu)return;DATA=window._pu;window._pu=null;localStorage.removeItem('beans_qa_data');document.getElementById('updateBanner').classList.remove('show');renderAll();showToast('已更新至 v'+(DATA.meta.buildNum||0))}
+function renderAll(){document.getElementById('headerTitle').textContent=DATA.meta.title||'豆子一家輕旅 客服助手';let c='';c+=`<div>📞 <strong>客服</strong>${DATA.meta.subtitle||''}</div>`;if(DATA.meta.lineId)c+=`<div>💬 <strong>LINE</strong>${DATA.meta.lineId}</div>`;document.getElementById('headerContact').innerHTML=c;document.getElementById('marqueeText').textContent=DATA.marquee||'';renderCategories();renderQA()}
+function renderCategories(){const box=document.getElementById('categoryContainer');let h=`<div class="category-card ${currentCategory==='all'?'active':''}" onclick="selectCategory('all')"><span class="icon">📚</span><div class="name">全部</div><div class="count">${DATA.qa.length}</div></div>`;DATA.categories.forEach(c=>{const n=DATA.qa.filter(q=>q.category===c.id).length;h+=`<div class="category-card ${currentCategory===c.id?'active':''}" onclick="selectCategory('${c.id}')"><span class="icon">${c.icon}</span><div class="name">${esc(c.name)}</div><div class="count">${n}</div></div>`});box.innerHTML=h}
+function selectCategory(id){currentCategory=id;document.getElementById('searchInput').value='';document.getElementById('searchClear').classList.remove('show');renderCategories();renderQA();scrollTo({top:0,behavior:'smooth'});if(window.innerWidth<=900)document.getElementById('sidebarPanel')?.classList.add('collapsed')}
+function renderQA(){const kw=document.getElementById('searchInput').value.trim().toLowerCase();const ct=document.getElementById('resultContainer');let list=DATA.qa;if(currentCategory!=='all')list=list.filter(q=>q.category===currentCategory);if(kw)list=list.filter(q=>q.title.toLowerCase().includes(kw)||q.content.toLowerCase().includes(kw)||(q.tags||[]).some(t=>t.toLowerCase().includes(kw)));if(!list.length){ct.innerHTML='<div class="empty-state"><div class="big">🔍</div><p>找不到相關資料</p></div>';return}let h='';const title=kw?`搜尋結果：「${esc(kw)}」`:currentCategory==='all'?'全部 QA':DATA.categories.find(c=>c.id===currentCategory)?.name||'';h+=`<div class="section-title">${title}<span class="count-badge">${list.length} 則</span></div>`;h+='<div class="qa-list">';list.forEach(q=>h+=renderCard(q,kw));h+='</div>';ct.innerHTML=h}
+function renderCard(q,kw){const cat=DATA.categories.find(c=>c.id===q.category);let badges='';if(q.urgent)badges+='<span class="badge badge-urgent">🚨 緊急</span>';if(q.internal)badges+='<span class="badge badge-internal">🔒 內部</span>';const content=fmt(q.content);const titleHl=kw?hl(q.title,kw):esc(q.title);let tags='';if(q.tags&&q.tags.length)tags='<div class="qa-tags">'+q.tags.map(t=>`<span class="tag">#${esc(t)}</span>`).join('')+'</div>';return`<div class="qa-card" data-id="${q.id}"><div class="qa-admin-btns"><button onclick="event.stopPropagation();moveQA(${q.id},-1)" title="上移">⬆</button><button onclick="event.stopPropagation();moveQA(${q.id},1)" title="下移">⬇</button><button onclick="event.stopPropagation();inlineEdit(${q.id})" title="編輯">✏️</button></div><div class="qa-header" onclick="toggleQA(${q.id})"><div class="qa-title">${cat?cat.icon:''} ${titleHl}${badges}</div><span class="qa-arrow">▼</span></div><div class="qa-content"><div class="qa-body">${content}</div>${tags}<div class="qa-edit-panel" id="editPanel${q.id}"></div></div></div>`}
+function toggleQA(id){document.querySelector(`.qa-card[data-id="${id}"]`)?.classList.toggle('open')}
+function moveQA(id,dir){const idx=DATA.qa.findIndex(q=>q.id===id);if(idx<0)return;if(currentCategory!=='all'){const sameCat=DATA.qa.filter(q=>q.category===currentCategory);const catIdx=sameCat.findIndex(q=>q.id===id);const targetCatIdx=catIdx+dir;if(targetCatIdx<0||targetCatIdx>=sameCat.length)return;const targetId=sameCat[targetCatIdx].id;const globalIdx=DATA.qa.findIndex(q=>q.id===id);const globalTargetIdx=DATA.qa.findIndex(q=>q.id===targetId);[DATA.qa[globalIdx],DATA.qa[globalTargetIdx]]=[DATA.qa[globalTargetIdx],DATA.qa[globalIdx]]}else{const j=idx+dir;if(j<0||j>=DATA.qa.length)return;[DATA.qa[idx],DATA.qa[j]]=[DATA.qa[j],DATA.qa[idx]]}saveLocal();renderQA()}
+function inlineEdit(id){const q=DATA.qa.find(x=>x.id===id);if(!q)return;const card=document.querySelector(`.qa-card[data-id="${id}"]`);if(!card.classList.contains('open'))card.classList.add('open');const panel=document.getElementById('editPanel'+id);if(panel.classList.contains('show')){panel.classList.remove('show');panel.innerHTML='';return}const catOptions=DATA.categories.map(c=>`<option value="${c.id}" ${c.id===q.category?'selected':''}>${c.icon} ${esc(c.name)}</option>`).join('');panel.innerHTML=`<div class="edit-field"><label>分類</label><select id="ie_cat_${id}">${catOptions}</select></div><div class="edit-field"><label>標題</label><input type="text" id="ie_title_${id}" value="${esc(q.title)}"></div><div class="edit-field"><label>內容</label><div class="edit-toolbar"><button type="button" class="tool-btn c-red" onclick="wrapSel('ie_content_${id}','red')">🔴 紅</button><button type="button" class="tool-btn c-orange" onclick="wrapSel('ie_content_${id}','orange')">🟠 橘</button><button type="button" class="tool-btn c-green" onclick="wrapSel('ie_content_${id}','green')">🟢 綠</button><button type="button" class="tool-btn c-blue" onclick="wrapSel('ie_content_${id}','blue')">🔵 藍</button><button type="button" class="tool-btn c-purple" onclick="wrapSel('ie_content_${id}','purple')">🟣 紫</button></div><textarea class="edit-textarea" id="ie_content_${id}">${esc(q.content)}</textarea></div><div class="edit-field"><label>標籤（逗號分隔）</label><input type="text" id="ie_tags_${id}" value="${esc((q.tags||[]).join(', '))}"></div><div class="edit-check"><label><input type="checkbox" id="ie_urgent_${id}" ${q.urgent?'checked':''}> 🚨 緊急</label><label><input type="checkbox" id="ie_internal_${id}" ${q.internal?'checked':''}> 🔒 內部</label></div><div class="edit-actions"><button class="edit-save" onclick="inlineSave(${id})">💾 儲存</button><button class="edit-cancel" onclick="inlineCancel(${id})">取消</button><button class="edit-delete" onclick="inlineDelete(${id})">🗑️ 刪除</button></div>`;panel.classList.add('show');panel.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function inlineSave(id){const q=DATA.qa.find(x=>x.id===id);if(!q)return;const title=document.getElementById('ie_title_'+id).value.trim();const content=document.getElementById('ie_content_'+id).value.trim();if(!title||!content){showToast('標題與內容不可空白');return}q.category=document.getElementById('ie_cat_'+id).value;q.title=title;q.content=content;q.tags=document.getElementById('ie_tags_'+id).value.split(',').map(s=>s.trim()).filter(Boolean);if(document.getElementById('ie_urgent_'+id).checked)q.urgent=true;else delete q.urgent;if(document.getElementById('ie_internal_'+id).checked)q.internal=true;else delete q.internal;saveLocal();renderAll();showToast('已儲存（記得匯出 data.json）')}
+function inlineCancel(id){const p=document.getElementById('editPanel'+id);if(p){p.classList.remove('show');p.innerHTML=''}}
+function inlineDelete(id){const q=DATA.qa.find(x=>x.id===id);if(!q)return;if(!confirm(`確定要刪除「${q.title}」？`))return;DATA.qa=DATA.qa.filter(x=>x.id!==id);saveLocal();renderAll();showToast('已刪除')}
+function wrapSel(taId,color){const ta=document.getElementById(taId);if(!ta)return;const s=ta.selectionStart,e=ta.selectionEnd;if(s===e){showToast('請先選取要套用的文字');return}const sel=ta.value.slice(s,e);ta.value=ta.value.slice(0,s)+`[[${color}:${sel}]]`+ta.value.slice(e);ta.focus()}
+function onSearch(){const v=document.getElementById('searchInput').value;document.getElementById('searchClear').classList.toggle('show',v.length>0);renderQA()}
+function clearSearch(){document.getElementById('searchInput').value='';document.getElementById('searchClear').classList.remove('show');renderQA()}
+function esc(s){return s==null?'':String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function fmt(c){if(!c)return'';let s=esc(c);s=s.replace(/\[\[red:(.*?)\]\]/g,'<span class="ct-red">$1</span>');s=s.replace(/\[\[orange:(.*?)\]\]/g,'<span class="ct-orange">$1</span>');s=s.replace(/\[\[green:(.*?)\]\]/g,'<span class="ct-green">$1</span>');s=s.replace(/\[\[blue:(.*?)\]\]/g,'<span class="ct-blue">$1</span>');s=s.replace(/\[\[purple:(.*?)\]\]/g,'<span class="ct-purple">$1</span>');s=s.replace(/\[\[link:(.*?)\|(.*?)\]\]/g,'<a href="$2" target="_blank" rel="noopener">$1</a>');s=s.replace(/(^|[^"'>=\/])(https?:\/\/[^\s<]+)/g,'$1<a href="$2" target="_blank" rel="noopener">$2</a>');return s}
+function hl(t,kw){if(!kw)return esc(t);const s=esc(t),k=esc(kw);return s.replace(new RegExp('('+k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'),'<mark style="background:#bbf7d0;padding:0 2px;border-radius:2px">$1</mark>')}
+function toggleFontSize(){const b=document.body;if(b.classList.contains('fs-large')){b.classList.remove('fs-large');b.classList.add('fs-xlarge');showToast('字體：特大')}else if(b.classList.contains('fs-xlarge')){b.classList.remove('fs-xlarge');showToast('字體：一般')}else{b.classList.add('fs-large');showToast('字體：大')}}
+function scrollToTop(){scrollTo({top:0,behavior:'smooth'})}
+function showToast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+function saveLocal(){localStorage.setItem('beans_qa_data',JSON.stringify(DATA))}
+function openAdmin(){document.getElementById('adminModal').classList.add('show');if(!isAdmin)showLogin();else showPanel()}
+function closeAdmin(){document.getElementById('adminModal').classList.remove('show')}
+function showLogin(){document.getElementById('adminTitle').textContent='🔒 管理後台';document.getElementById('adminBody').innerHTML=`<div class="login-form"><div style="font-size:3rem;margin-bottom:10px">🔐</div><p style="color:var(--text-light);margin-bottom:16px">請輸入管理密碼</p><input type="password" id="adminPwd" placeholder="密碼" onkeydown="if(event.key==='Enter')doLogin()"><div style="margin-top:10px"><button class="btn-primary" onclick="doLogin()">登入</button></div></div>`;setTimeout(()=>document.getElementById('adminPwd')?.focus(),100)}
+function doLogin(){const p=document.getElementById('adminPwd').value;if(p===ADMIN_PASSWORD){isAdmin=true;document.body.classList.add('admin-mode');showPanel();renderAll();showToast('登入成功，QA 卡片右上角出現 ✏️ 編輯按鈕')}else{showToast('密碼錯誤');document.getElementById('adminPwd').value='';document.getElementById('adminPwd').focus()}}
+function showPanel(){document.getElementById('adminTitle').textContent='⚙️ 管理後台';document.getElementById('adminBody').innerHTML=`<div class="admin-tabs"><button class="admin-tab active" onclick="showAdminTab('category',this)">📂 分類管理</button><button class="admin-tab" onclick="showAdminTab('newqa',this)">➕ 新增 QA</button><button class="admin-tab" onclick="showAdminTab('meta',this)">⚙️ 基本設定</button><button class="admin-tab" onclick="showAdminTab('export',this)">💾 匯入/匯出</button></div><div id="adminTabContent"></div>`;showAdminTab('category')}
+function showAdminTab(tab,el){if(el)document.querySelectorAll('.admin-tab').forEach(t=>t.classList.remove('active')),el.classList.add('active');const box=document.getElementById('adminTabContent');if(tab==='category')box.innerHTML=renderCatAdmin();else if(tab==='newqa')box.innerHTML=renderNewQA();else if(tab==='meta')box.innerHTML=renderMetaAdmin();else if(tab==='export')box.innerHTML=renderExportAdmin()}
+function renderCatAdmin(){setTimeout(renderCatList,0);return`<div class="admin-toolbar"><button class="btn-primary" onclick="editCat(null)">➕ 新增分類</button></div><div class="admin-list" id="catList"></div>`}
+function renderCatList(){document.getElementById('catList').innerHTML=DATA.categories.map((c,i)=>{const n=DATA.qa.filter(q=>q.category===c.id).length;return`<div class="admin-item"><div class="admin-item-info"><div class="admin-item-title">${c.icon} ${esc(c.name)}</div><div class="admin-item-meta">ID: ${esc(c.id)} ｜ ${n} 則</div></div><button class="admin-btn admin-btn-edit" onclick="moveCat(${i},-1)" ${i===0?'disabled style="opacity:.3"':''}>⬆</button><button class="admin-btn admin-btn-edit" onclick="moveCat(${i},1)" ${i===DATA.categories.length-1?'disabled style="opacity:.3"':''}>⬇</button><button class="admin-btn admin-btn-edit" onclick="editCat('${c.id}')">編輯</button><button class="admin-btn admin-btn-del" onclick="delCat('${c.id}')">刪除</button></div>`}).join('')}
+function moveCat(i,d){const j=i+d;if(j<0||j>=DATA.categories.length)return;[DATA.categories[i],DATA.categories[j]]=[DATA.categories[j],DATA.categories[i]];saveLocal();renderCatList();renderCategories()}
+function editCat(id){const c=id?DATA.categories.find(x=>x.id===id):{id:'',name:'',icon:'📢'};const isNew=!id;const grid=ICONS.map(i=>`<div class="icon-option ${i===c.icon?'selected':''}" data-icon="${i}" onclick="pickIcon(this)">${i}</div>`).join('');document.getElementById('adminTabContent').innerHTML=`<button class="btn-secondary" onclick="showAdminTab('category',document.querySelector('.admin-tab.active'))">← 返回</button><h3 style="margin:16px 0">${isNew?'➕ 新增分類':'✏️ 編輯分類'}</h3><div class="form-group"><label>分類名稱</label><input type="text" id="catName" value="${esc(c.name)}"></div><div class="form-group"><label>分類 ID（英文/數字）</label><input type="text" id="catId" value="${esc(c.id)}" ${!isNew?'readonly style="background:#F5F5F5"':''}></div><div class="form-group"><label>圖示</label><div class="icon-picker">${grid}</div><div style="margin-top:8px;font-size:.85rem">目前：<span id="iconPv" style="font-size:1.8rem;vertical-align:middle">${c.icon}</span></div></div><div style="margin-top:20px"><button class="btn-secondary" onclick="showAdminTab('category',document.querySelector('.admin-tab.active'))">取消</button><button class="btn-primary" onclick="saveCat(${isNew})">💾 儲存</button></div>`}
+function pickIcon(el){document.querySelectorAll('.icon-option').forEach(o=>o.classList.remove('selected'));el.classList.add('selected');document.getElementById('iconPv').textContent=el.dataset.icon}
+function saveCat(isNew){const name=document.getElementById('catName').value.trim(),idVal=document.getElementById('catId').value.trim();const selected=document.querySelector('.icon-option.selected')?.dataset.icon;const icon=selected||'📢';if(!name){showToast('名稱不可空白');return}if(!idVal||!/^[a-zA-Z0-9_]+$/.test(idVal)){showToast('ID 只能用英文/數字/底線');return}if(isNew){if(DATA.categories.find(x=>x.id===idVal)){showToast('ID 已存在');return}DATA.categories.push({id:idVal,name,icon})}else{const c=DATA.categories.find(x=>x.id===idVal);c.name=name;c.icon=icon}saveLocal();showToast('已儲存');showAdminTab('category',document.querySelector('.admin-tab.active'));renderAll()}
+function delCat(id){const c=DATA.categories.find(x=>x.id===id);if(!c)return;const n=DATA.qa.filter(q=>q.category===id).length;if(n>0){alert(`還有 ${n} 則 QA，請先移到其他分類`);return}if(!confirm(`刪除「${c.name}」？`))return;DATA.categories=DATA.categories.filter(x=>x.id!==id);saveLocal();showToast('已刪除');renderCatList();renderAll()}
+function renderNewQA(){const catOptions=DATA.categories.map(c=>`<option value="${c.id}">${c.icon} ${esc(c.name)}</option>`).join('');return`<h3 style="margin-bottom:16px">➕ 新增 QA</h3><div class="form-group"><label>分類</label><select id="nq_cat">${catOptions}</select></div><div class="form-group"><label>標題</label><input type="text" id="nq_title" placeholder="輸入標題"></div><div class="form-group"><label>內容</label><div class="edit-toolbar"><button type="button" class="tool-btn c-red" onclick="wrapSel('nq_content','red')">🔴 紅</button><button type="button" class="tool-btn c-orange" onclick="wrapSel('nq_content','orange')">🟠 橘</button><button type="button" class="tool-btn c-green" onclick="wrapSel('nq_content','green')">🟢 綠</button><button type="button" class="tool-btn c-blue" onclick="wrapSel('nq_content','blue')">🔵 藍</button><button type="button" class="tool-btn c-purple" onclick="wrapSel('nq_content','purple')">🟣 紫</button></div><textarea class="edit-textarea" id="nq_content" placeholder="輸入內容..."></textarea></div><div class="form-group"><label>標籤（逗號分隔）</label><input type="text" id="nq_tags" placeholder="關鍵字1, 關鍵字2"></div><div class="edit-check" style="margin-bottom:12px"><label><input type="checkbox" id="nq_urgent"> 🚨 緊急</label><label><input type="checkbox" id="nq_internal"> 🔒 內部</label></div><button class="btn-primary" onclick="saveNewQA()">💾 儲存新增</button>`}
+function saveNewQA(){const title=document.getElementById('nq_title').value.trim(),content=document.getElementById('nq_content').value.trim();if(!title||!content){showToast('標題與內容不可空白');return}const newId=Math.max(0,...DATA.qa.map(x=>x.id))+1;const q={id:newId,category:document.getElementById('nq_cat').value,title,content,tags:document.getElementById('nq_tags').value.split(',').map(s=>s.trim()).filter(Boolean)};if(document.getElementById('nq_urgent').checked)q.urgent=true;if(document.getElementById('nq_internal').checked)q.internal=true;DATA.qa.push(q);saveLocal();renderAll();showToast('已新增！');document.getElementById('nq_title').value='';document.getElementById('nq_content').value='';document.getElementById('nq_tags').value=''}
+function renderMetaAdmin(){return`<h3 style="margin-bottom:16px">⚙️ 基本設定</h3><div class="form-group"><label>網站標題</label><input type="text" id="m_title" value="${esc(DATA.meta.title||'')}"></div><div class="form-group"><label>客服電話</label><input type="text" id="m_sub" value="${esc(DATA.meta.subtitle||'')}"></div><div class="form-group"><label>官方 LINE ID</label><input type="text" id="m_line" value="${esc(DATA.meta.lineId||'')}"></div><div class="form-group"><label>跑馬燈</label><textarea id="m_marquee" rows="3">${esc(DATA.marquee||'')}</textarea></div><div class="form-group"><label>版本</label><input type="text" id="m_ver" value="${esc(DATA.meta.version||'')}"></div><div style="margin-top:20px"><button class="btn-primary" onclick="saveMeta()">💾 儲存</button></div>`}
+function saveMeta(){DATA.meta.title=document.getElementById('m_title').value.trim();DATA.meta.subtitle=document.getElementById('m_sub').value.trim();DATA.meta.lineId=document.getElementById('m_line').value.trim();DATA.meta.version=document.getElementById('m_ver').value.trim();DATA.marquee=document.getElementById('m_marquee').value.trim();saveLocal();showToast('已儲存');renderAll()}
+function renderExportAdmin(){return`<div class="export-section"><h3>📤 匯出 data.json</h3><p>將目前的資料匯出成 JSON 檔案，可上傳到 GitHub 更新。</p><button class="btn-primary" onclick="exportJson()">💾 下載 data.json</button></div><div class="export-section" style="margin-top:16px"><h3>📥 匯入 data.json</h3><p>從檔案匯入資料（會覆蓋目前的資料）。</p><input type="file" id="importFile" accept=".json" onchange="importJson(this)"><br><button class="btn-primary" style="margin-top:8px" onclick="clearLocal()">🗑️ 清除本機暫存（恢復原始資料）</button></div>`}
+function exportJson(){const d=JSON.parse(JSON.stringify(DATA));d.meta.buildNum=(d.meta.buildNum||0)+1;const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download='data.json';a.click();URL.revokeObjectURL(u);showToast('已下載 data.json（buildNum: '+d.meta.buildNum+'）')}
+function importJson(input){const f=input.files[0];if(!f)return;const r=new FileReader();r.onload=e=>{try{const d=JSON.parse(e.target.result);if(!d.meta||!d.qa){showToast('格式錯誤');return}DATA=d;saveLocal();renderAll();showToast('匯入成功！')}catch(err){showToast('JSON 解析失敗')}};r.readAsText(f)}
+function clearLocal(){if(!confirm('確定清除本機暫存？將恢復為 GitHub 上的原始資料。'))return;localStorage.removeItem('beans_qa_data');location.reload()}
+</script>
+</body>
+</html>
